@@ -28,6 +28,8 @@ RUN apt install -y gcc-multilib
 RUN apt install -y gcc-arm-linux-gnueabihf
 RUN apt install -y gcc-aarch64-linux-gnu
 RUN apt install -y gcc-i686-linux-gnu libc6-dev-i386
+RUN apt install -y gcc-arm-linux-gnueabi
+RUN apt install -y gcc-riscv64-linux-gnu
 
 WORKDIR /tmp
 
@@ -47,7 +49,12 @@ RUN ./cross-compile-tss.sh aarch64-linux-gnu linux-generic64
 RUN ./cross-compile-tss.sh arm-linux-gnueabihf linux-generic32
 # Cross-compile TPM2 TSS and OpenSSL for Linux on i686
 RUN ./cross-compile-tss.sh i686-linux-gnu linux-generic32
+# Cross-compile TPM2 TSS and OpenSSL for Linux on arm (soft float)
+RUN ./cross-compile-tss.sh arm-linux-gnueabi linux-generic32
+# Cross-compile TPM2 TSS and OpenSSL for Linux on riscv
+RUN ./cross-compile-tss.sh riscv64-linux-gnu linux-generic64
 
 RUN rustup target add armv7-unknown-linux-gnueabihf
 RUN rustup target add aarch64-unknown-linux-gnu
 RUN rustup target add i686-unknown-linux-gnu
+RUN rustup target add riscv64gc-unknown-linux-gnu
