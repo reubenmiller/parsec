@@ -65,7 +65,7 @@ cargo build --release --features "pkcs11-provider, mbed-crypto-provider, tpm-pro
 # Set the SYSROOT used by pkg-config
 export SYSROOT=/tmp/arm-linux-gnueabi
 # Add the correct libcrypto to the linking process
-export RUSTFLAGS="-lcrypto -L/tmp/arm-linux-gnueabi/lib"
+export RUSTFLAGS="-lcrypto -L/tmp/riscv64-linux-gnu/lib"
 cargo build --features "pkcs11-provider, mbed-crypto-provider, tpm-provider, unix-peer-credentials-authenticator, direct-authenticator" \
 	--release \
 	--target riscv64gc-unknown-linux-gnu \
