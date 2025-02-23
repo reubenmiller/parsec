@@ -16,11 +16,11 @@ jobs:
     name: Check for unused dependencies
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: "${{ github.event.inputs.rev }}"
       - name: Install latest Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
       - name: Install cargo udeps
@@ -32,11 +32,11 @@ jobs:
     name: Check for crates with security vulnerabilities
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: "${{ github.event.inputs.rev }}"
       - name: Install latest Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: nightly
       - name: Install cargo audit
@@ -51,7 +51,7 @@ jobs:
     name: Gather coverage data and upload to Codecov
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
           ref: "${{ github.event.inputs.rev }}"
       - name: Run the container to execute the coverage script
