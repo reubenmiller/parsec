@@ -1,0 +1,56 @@
+name: release
+on:
+  push:
+    branches: [ ci-release-workflow ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/parallaxsecond/parsec-service-test-cross-compile:latest
+      options: --user root
+      volumes:
+        - my_docker_volume:/volume_mount
+      # options: --cpus 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "true"
+
+      - name: Install Dependencies
+        run: |
+          rustup target add arm-unknown-linux-gnueabihf
+          apt-get install -y libmbedtls-dev
+          pip3 install ziglang
+          cargo install cargo-zigbuild
+
+      - name: Build
+        if: ${{ false }}
+        run: |
+          set -x
+          build_with_zig_fallback() {
+              arch="$1"
+              echo "Building target: $arch"
+              rm -rf "target/$arch"
+              cargo build --release --features "direct-authenticator,unix-peer-credentials-authenticator,pkcs11-provider,mbed-crypto-provider,tpm-provider" --target "$arch" ||
+                cargo-zigbuild build --release --features "direct-authenticator,unix-peer-credentials-authenticator,pkcs11-provider,mbed-crypto-provider,tpm-provider" --target "$arch"
+          }
+
+          build_with_zig_fallback x86_64-unknown-linux-gnu
+          #build_with_zig_fallback aarch64-unknown-linux-gnu
+          #build_with_zig_fallback armv7-unknown-linux-gnueabihf
+          #build_with_zig_fallback i686-unknown-linux-gnu
+          #build_with_zig_fallback arm-unknown-linux-gnueabihf
+
+      - name: Cross Compile
+        run: |
+          set -x
+          git config --global --add safe.directory "$(pwd)"
+          ./test/cross-compile.sh
+
+      - name: Upload packages
+        # https://github.com/marketplace/actions/upload-a-build-artifact
+        uses: actions/upload-artifact@v4
+        with:
+            name: binaries
+            path: target/*/release/parsec
